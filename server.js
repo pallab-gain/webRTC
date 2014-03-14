@@ -8,11 +8,11 @@ db.on('error', function(){
 db.once('open', function () {
     console.log('Connection successful');
 });
-
 mongoose.connect('mongodb://localhost/test');
 
-var kittenSchema = mongoose.Schema({
+/*
+ var kittenSchema = mongoose.Schema({
     name: String
 });
 
-var kitten = mongoose.model('kitten', kittenSchema)
+ var kitten = mongoose.model('kitten', kittenSchema)*/
