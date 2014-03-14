@@ -20,22 +20,54 @@ var userSchema = mongo.Schema({
 var User = mongo.model('User', userSchema);
 
 var userController = function () {
-    return {
-        add_user: function (options) {
-            var name = options.name;
-            var phone = options.phone;
-            return  new User({name: name, phone: phone});
-        },
-        save_user: function (cur_user, callback) {
-            cur_user.save(function (err, cur_user, number_affect) {
-                callback(err, cur_user, number_affect);
-            });
-        },
-        find_user: function (phone, callback) {
-            User.find({phone: phone}).exec(function (err, users) {
-                callback(err, users);
-            })
-        }
+    create_user = function (options, callback) {
+        var name = options.name;
+        var phone = options.phone;
+        this.is_exist(phone, function (err, exist) {
+            if (err) {
+                callback('server error', false);
+            } else {
+                if (exist) {
+                    callback('phone number already exist', null);
+                } else {
+                    callback(null, new User({name: name, phone: phone}));
+                }
+            }
+        });
     };
+    save_user = function (cur_user, callback) {
+        cur_user.save(function (err, cur_user, number_affect) {
+            callback(err, cur_user, number_affect);
+        });
+    };
+    find_user = function (phone, callback) {
+        User.findOne({phone: phone}).exec(function (err, user) {
+            if (err) {
+                callback('server error', null);
+            } else if (!user) {
+                callback('could not find user', null);
+            }
+            else {
+                callback(null, user);
+            }
+        })
+    };
+    is_exist = function (phone, callback) {
+        User.findOne({phone: phone}).exec(function (err, user) {
+            if (err) {
+                callback('server error', null);
+            } else {
+                callback(null, user ? true : false);
+            }
+        });
+    };
+
+    return {
+        create_user: create_user,
+        save_user: save_user,
+        find_user: find_user,
+        is_exist: is_exist
+    }
+
 };
 module.exports = userController;
