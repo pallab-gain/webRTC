@@ -1,27 +1,37 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="webrtcApp">
 <head>
-    <title>WebRTC</title>
+    <meta charset="utf-8">
+    <title>WebRTC!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-    <!-- css -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrap-theme.css" rel="stylesheet">
-    <!--javascript-->
-    <script src="js/helpers/jquery.js"></script>
-    <script src="js/helpers/bootstrap.js"></script>
-    <script src="js/helpers/angular.js"></script>
-    <script src="js/helpers/jquery.cookie.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 
 
-    <script src="js/angular_me/header/header.js"></script>
-    <script src="js/angular_me/signup/signup.js"></script>
+    <script type="text/javascript" src="js/helpers/jquery.min.js"></script>
+    <script type="text/javascript" src="js/helpers/jquery.cookie.js"></script>
+    <script type="text/javascript" src="js/helpers/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/helpers/angular.js"></script>
 
-    <script src="js/app.js"></script>
+    <script type="text/javascript" src="js/angular_me/header/header.js"></script>
+    <script type="text/javascript" src="js/angular_me/signup/signup.js"></script>
+    <script type="text/javascript" src="js/angular_me/container/container.js"></script>
+
+    <script type="text/javascript" src="js/app.js"></script>
 </head>
 
-<body ng-controller="mainController">
-<div header-directive></div>
-<div signup-directive></div>
-
+<body>
+<div class="container" ng-controller="mainController">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div header-directive></div>
+            <div signup-directive></div>
+            <div container-directive></div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
