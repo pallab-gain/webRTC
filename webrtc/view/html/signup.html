@@ -1,4 +1,5 @@
-<div class="col-md-4 col-md-offset-4" style="padding-top: 7%" ng-controller="signupController" ng-show="need_login==true">
+<div class="col-md-4 col-md-offset-4" style="padding-top: 7%" ng-controller="signupController"
+     ng-show="need_login==true">
     <div class="panel panel-default">
         <div class="panel-heading">
             <span class="glyphicon glyphicon-lock"></span> Login
@@ -36,7 +37,7 @@
                         <button type="submit" class="btn btn-success btn-sm" ng-click="on_signin()">
                             Sign in
                         </button>
-                        <button type="submit" class="btn btn-default btn-sm">
+                        <button type="submit" class="btn btn-default btn-sm" ng-click="on_signup()">
                             Sign up
                         </button>
                     </div>
