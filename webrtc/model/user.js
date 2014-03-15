@@ -16,7 +16,8 @@ mongo.connect('mongodb://localhost/test');
 var userSchema = mongo.Schema({
     phone: String,
     password: String,
-    status: Number
+    status: Number,
+    buddy_phone: []
 });
 var User = mongo.model('User', userSchema);
 
@@ -76,13 +77,39 @@ var userController = function () {
                 }
             }
         })
-    }
+    };
+    add_buddy = function (options, callback) {
+        var self = this;
+        User.update({phone: options.phone},
+            {$push: {buddy_phone: options.buddy_phone}}, function (err, status) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, status);
+                }
+            }
+        )
+        ;
+    };
+    update_status = function (options, callback) {
+        var self = this;
+        User.update({phone: options.phone},
+            {$set: {status: options.status}}, function (err, status) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, status);
+                }
+            });
+    };
     return {
         create_user: create_user,
         save_user: save_user,
         find_user: find_user,
         is_exist: is_exist,
-        is_valid_user: is_valid_user
+        is_valid_user: is_valid_user,
+        add_buddy: add_buddy,
+        update_status: update_status
     }
 
 };
