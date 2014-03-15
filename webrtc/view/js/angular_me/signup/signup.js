@@ -10,12 +10,51 @@ signup.directive('signupDirective', function () {
         templateUrl: 'html/signup.html'
     };
 });
+signup.factory('User', function ($http, $q) {
+    var User = {};
 
-signup.controller('signupController', function ($scope) {
-    $scope.on_signin = function () {
+    User.check_valid_user = function (phn, pass) {
+        var dfr = $q.defer();
+        var url = '/check-valid-user'
+        $http({method: 'POST', url: url, data: {phone: phn, password: pass}})
+            .success(function (data, status, headers, config) {
+                User.data = data;
+                dfr.resolve();
+            })
+            .error(function (data, status, headers, config) {
+                User.data = data;
+                dfr.resolve();
+            })
+        return dfr.promise;
+    }
+
+    User.sign_up_user = function (phn, pass) {
+        var dfr = $q.defer();
+        var url = '/sign-up-user'
+        $http({method: 'POST', url: url, data: {phone: phn, password: pass}})
+            .success(function (data, status, headers, config) {
+                User.data = data;
+                dfr.resolve();
+            })
+            .error(function (data, status, headers, config) {
+                User.data = data;
+                dfr.resolve();
+            })
+        return dfr.promise;
+    }
+    return User;
+});
+signup.controller('signupController', function ($scope, User) {
+    $scope.on_signin = function (phn, pass, rem) {
         $scope.need_login = !$scope.need_login;
+        console.log(phn, pass, rem)
+        User.check_valid_user(phn, pass).then(function () {
+            console.log(User.data);
+        });
     };
-    $scope.on_signup = function () {
-
+    $scope.on_signup = function (phn, pass) {
+        User.sign_up_user(phn, pass).then(function () {
+            console.log(User.data);
+        });
     };
 });

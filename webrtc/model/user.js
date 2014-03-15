@@ -14,23 +14,25 @@ db.once('open', function () {
 });
 mongo.connect('mongodb://localhost/test');
 var userSchema = mongo.Schema({
-    name: String,
-    phone: String
+    phone: String,
+    password: String,
+    status: Number
 });
 var User = mongo.model('User', userSchema);
 
 var userController = function () {
     create_user = function (options, callback) {
-        var name = options.name;
         var phone = options.phone;
-        this.is_exist(phone, function (err, exist) {
+        var password = options.password;
+        var self = this;
+        self.is_exist(phone, function (err, exist) {
             if (err) {
                 callback('server error', false);
             } else {
                 if (exist) {
                     callback('phone number already exist', null);
                 } else {
-                    callback(null, new User({name: name, phone: phone}));
+                    callback(null, new User({password: password, phone: phone, status: 0}));
                 }
             }
         });
@@ -61,12 +63,26 @@ var userController = function () {
             }
         });
     };
-
+    is_valid_user = function (options, callback) {
+        var self = this;
+        self.find_user(options.phone, function (err, user) {
+            if (err) {
+                callback(err, null);
+            } else {
+                if (options.password === user.password) {
+                    callback(null, user);
+                } else {
+                    callback('invalid user', null);
+                }
+            }
+        })
+    }
     return {
         create_user: create_user,
         save_user: save_user,
         find_user: find_user,
-        is_exist: is_exist
+        is_exist: is_exist,
+        is_valid_user: is_valid_user
     }
 
 };
