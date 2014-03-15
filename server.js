@@ -27,7 +27,7 @@ app.post('/check-valid-user', function (req, res) {
             if (err) {
                 return res.send({status: false, data: err});
             } else {
-                return res.send({status: true, data: {token: data._id, phone: data.phone}});
+                return res.send({status: true, data: {user_token: data._id, user_phone: data.phone}});
             }
         })
     } else {

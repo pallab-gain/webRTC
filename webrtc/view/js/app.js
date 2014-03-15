@@ -1,12 +1,13 @@
 /**
  * Created by xerxes on 3/15/14.
  */
-var webrtcApp = angular.module('webrtcApp', ['ngCookies', 'headerApp', 'signupApp']);
+var webrtcApp = angular.module('webrtcApp', ['headerApp', 'signupApp']);
 
-webrtcApp.factory('checkCredential', function ($cookieStore) {
+webrtcApp.factory('checkCredential', function () {
     var checkCredential = {};
     checkCredential.is_loggedin = function () {
-        return $cookieStore.get('user_token') ? true : false;
+        var user_token = $.cookie("user_token");
+        return (typeof  user_token == 'undefined') ? true : false;
     };
     return checkCredential;
 });

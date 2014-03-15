@@ -11,6 +11,7 @@ header.directive('headerDirective', function () {
 });
 header.controller('headerController', function ($scope) {
     $scope.handle_login = function () {
-        $scope.need_login = !$scope.need_login;
+        $scope.need_login = true;
+        $.removeCookie('user_token');
     };
 });

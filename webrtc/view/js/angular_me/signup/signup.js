@@ -42,14 +42,26 @@ signup.factory('User', function ($http, $q) {
             })
         return dfr.promise;
     }
+    User.set_cookies = function (options, timespan) {
+        if (typeof timespan == 'undefined') {
+            $.cookie("user_token", options.user_token);
+        } else {
+            $.cookie('user_token', options.user_token, {expires: timespan});
+        }
+    }
     return User;
 });
 signup.controller('signupController', function ($scope, User) {
     $scope.on_signin = function (phn, pass, rem) {
         $scope.need_login = !$scope.need_login;
-        console.log(phn, pass, rem)
         User.check_valid_user(phn, pass).then(function () {
-            console.log(User.data);
+            if (User.data.status == true) {
+                if (typeof rem != 'undefined' && rem == true)
+                    User.set_cookies(User.data.data, 5);
+                else {
+                    User.set_cookies(User.data.data);
+                }
+            }
         });
     };
     $scope.on_signup = function (phn, pass) {
