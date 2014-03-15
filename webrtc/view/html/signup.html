@@ -36,7 +36,8 @@
                 </div>
                 <div class="form-group last">
                     <div class="col-sm-offset-3 col-sm-9">
-                        <button type="submit" class="btn btn-success btn-sm" ng-click="on_signin(phone,password,remember)">
+                        <button type="submit" class="btn btn-success btn-sm"
+                                ng-click="on_signin(phone,password,remember)">
                             Sign in
                         </button>
                         <button type="submit" class="btn btn-default btn-sm" ng-click="on_signup(phone,password)">
@@ -46,6 +47,8 @@
                 </div>
             </form>
         </div>
-        <div class="panel-footer"></div>
+        <div class="panel-footer">
+            <p style="text-align: center">{{server_msg}}</p>
+        </div>
     </div>
 </div>

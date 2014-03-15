@@ -53,6 +53,7 @@ signup.factory('User', function ($http, $q) {
 });
 signup.controller('signupController', function ($scope, User) {
     $scope.on_signin = function (phn, pass, rem) {
+        $scope.server_msg = undefined;
         User.check_valid_user(phn, pass).then(function () {
             if (User.data.status == true) {
                 if (typeof rem != 'undefined' && rem == true)
@@ -67,6 +68,11 @@ signup.controller('signupController', function ($scope, User) {
     $scope.on_signup = function (phn, pass) {
         User.sign_up_user(phn, pass).then(function () {
             console.log(User.data);
+            if (User.data.status == true) {
+                $scope.server_msg = 'Successful! login to continue.'
+            } else {
+                $scope.server_msg = User.data.data || 'Failed to sign up';
+            }
         });
     };
 });
