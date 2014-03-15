@@ -53,7 +53,6 @@ signup.factory('User', function ($http, $q) {
 });
 signup.controller('signupController', function ($scope, User) {
     $scope.on_signin = function (phn, pass, rem) {
-        $scope.need_login = !$scope.need_login;
         User.check_valid_user(phn, pass).then(function () {
             if (User.data.status == true) {
                 if (typeof rem != 'undefined' && rem == true)
@@ -61,6 +60,7 @@ signup.controller('signupController', function ($scope, User) {
                 else {
                     User.set_cookies(User.data.data);
                 }
+                $scope.need_login = false;
             }
         });
     };
