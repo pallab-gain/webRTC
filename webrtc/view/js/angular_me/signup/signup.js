@@ -12,5 +12,8 @@ signup.directive('signupDirective', function () {
 });
 
 signup.controller('signupController', function ($scope) {
-
+    $scope.on_signin = function () {
+        console.log('on sign in');
+        $scope.need_login = !$scope.need_login;
+    }
 });
