@@ -19,6 +19,21 @@ app.configure(function () {
 app.get('/', function (req, res) {
     res.sendfile(app.get('html') + '/index.html');
 });
+app.post('/get_user_info', function (req, res) {
+    var attr = req.body;
+    if (attr.hasOwnProperty('token_id')) {
+        userDB.find_user_by_token(attr.token_id, function (err, user) {
+            if (err) {
+                return res.send({status: false, data: err});
+            } else {
+                return res.send({status: true, data: user});
+            }
+        });
+    }
+    else {
+        return res.send({status: false, data: null});
+    }
+});
 app.post('/check-valid-user', function (req, res) {
     var attr = req.body;
     if (attr.hasOwnProperty('phone') && attr.hasOwnProperty('password')) {
@@ -58,6 +73,19 @@ app.post('/sign-up-user', function (req, res) {
 });
 
 io.sockets.on('connection', function (socket) {
-    console.log('called');
-    socket.emit('init', { hello: 'world' });
+    socket.on('join_room', function (options) {
+        userDB.find_user_by_token(options.room_id, function (err, user) {
+            if (!err) {
+                socket.join(options.room_id);
+                var data = {status: true, data: 'readdy for connect'};
+                socket.to(options.room).emit('on_join_room', data);
+            }
+        });
+    });
+    socket.on('send_sdp', function (options) {
+        socket.to(options.buddy_room).emit('on_sdp_msg', options);
+    });
+    socket.on('disconnect', function () {
+        socket.emit();
+    });
 });

@@ -43,6 +43,17 @@ var userController = function () {
             callback(err, cur_user, number_affect);
         });
     };
+    find_user_by_token = function (token_id, callback) {
+        User.findOne({_id: token_id}).exec(function (err, user) {
+            if (err) {
+                callback('server error', null);
+            } else if (!user) {
+                callback('count not find user', null);
+            } else {
+                callback(null, user);
+            }
+        });
+    };
     find_user = function (phone, callback) {
         User.findOne({phone: phone}).exec(function (err, user) {
             if (err) {
@@ -105,6 +116,7 @@ var userController = function () {
     return {
         create_user: create_user,
         save_user: save_user,
+        find_user_by_token: find_user_by_token,
         find_user: find_user,
         is_exist: is_exist,
         is_valid_user: is_valid_user,
