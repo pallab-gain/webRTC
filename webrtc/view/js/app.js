@@ -14,5 +14,11 @@ webrtcApp.factory('checkCredential', function () {
 
 webrtcApp.controller('mainController', function ($scope, checkCredential) {
     $scope.need_login = checkCredential.is_loggedin();
+    $scope.socket = io.connect('http://localhost:9090');
 
+    $scope.$watch('need_login', function () {
+        if ($scope.need_login == false) {
+
+        }
+    });
 });

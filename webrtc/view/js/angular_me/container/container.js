@@ -13,5 +13,5 @@ container.directive('containerDirective', function () {
     };
 });
 container.controller('containerController', function ($scope) {
-
+    $scope.socket = io.connect('http://localhost:9090');
 });

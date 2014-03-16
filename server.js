@@ -57,3 +57,7 @@ app.post('/sign-up-user', function (req, res) {
     }
 });
 
+io.sockets.on('connection', function (socket) {
+    console.log('called');
+    socket.emit('init', { hello: 'world' });
+});
