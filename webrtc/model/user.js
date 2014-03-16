@@ -113,6 +113,7 @@ var userController = function () {
                 }
             });
     };
+
     return {
         create_user: create_user,
         save_user: save_user,

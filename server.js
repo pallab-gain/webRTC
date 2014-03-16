@@ -76,9 +76,17 @@ io.sockets.on('connection', function (socket) {
     socket.on('join_room', function (options) {
         userDB.find_user_by_token(options.room_id, function (err, user) {
             if (!err) {
-                socket.join(options.room_id);
-                var data = {status: true, data: 'readdy for connect'};
-                socket.to(options.room).emit('on_join_room', data);
+                userDB.update_status({phone: user.phone, status: 1}, function (err, status) {
+                    if (!err) {
+                        socket.join(options.room_id);
+                        socket.room = options.room_id;
+                        var data = {status: true, data: 'readdy for connect'};
+                        socket.to(options.room).emit('on_join_room', data);
+                    } else {
+                        var data = {status: false, data: 'server error'};
+                        socket.to(options.room).emit('on_join_room', data);
+                    }
+                })
             }
         });
     });
@@ -86,6 +94,19 @@ io.sockets.on('connection', function (socket) {
         socket.to(options.buddy_room).emit('on_sdp_msg', options);
     });
     socket.on('disconnect', function () {
-        socket.emit();
+        if (typeof socket.room !== 'undefined') {
+            socket.leave(socket.room);
+            userDB.find_user_by_token(socket.room, function (err, user) {
+                if (!err) {
+                    userDB.update_status({phone: user.phone, status: 0}, function (err, status) {
+                        console.log(err, status, 'updated user info');
+                    })
+                }else{
+                    console.log('error');
+                }
+            });
+        }else{
+            console.log('unrecognized socket');
+        }
     });
 });
