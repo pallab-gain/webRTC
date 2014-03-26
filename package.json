@@ -1,0 +1,19 @@
+{
+    "name": "webRTC",
+    "version": "0.0.1",
+    "scripts": {
+        "start": "hotnode ./server.js"
+    },
+    "dependencies": {
+        "express": "*",
+        "socket.io": "*",
+        "knex": "*",
+        "bookshelf": "*",
+        "mysql": "*",
+        "hotnode": "*",
+        "passport": "*"
+    },
+    "engines": {
+        "node": ">=0.6"
+    }
+}
