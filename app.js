@@ -7,7 +7,7 @@ var routes = require('./routes/route');
 var http = require('http');
 var path = require('path');
 var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 var app = express();
 
 // all environments
@@ -33,17 +33,19 @@ app.use('public', express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
-passport.use(new FacebookStrategy({
-        clientID: '282063648620862',
-        clientSecret: '9ed9d41a306c2a89cbf8eb282e6ea02a',
-        callbackURL: "http://www.example.com/auth/facebook/callback"
-    },
-    function (accessToken, refreshToken, profile, done) {
-        User.findOrCreate('test', function (err, user) {
+passport.use(new LocalStrategy(
+    function (username, password, done) {
+        User.findOne({ username: username }, function (err, user) {
             if (err) {
                 return done(err);
             }
-            done(null, user);
+            if (!user) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            if (!user.validPassword(password)) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
+            return done(null, user);
         });
     }
 ));
@@ -52,11 +54,11 @@ app.get('/home', routes.home);
 app.get('/login', routes.login);
 
 
-app.get('/auth/facebook', passport.authenticate('facebook'));
-
-app.get('/auth/facebook/callback',
-    passport.authenticate('facebook', { successRedirect: '/home',
-        failureRedirect: '/login' }));
+app.post('/login',
+    passport.authenticate('local', { successRedirect: '/home',
+        failureRedirect: '/login',
+        failureFlash: true })
+);
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
