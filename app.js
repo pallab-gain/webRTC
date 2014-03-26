@@ -6,9 +6,14 @@ var express = require('express');
 var routes = require('./routes/route');
 var http = require('http');
 var path = require('path');
+var flash = require('connect-flash')
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var app = express();
+
+//all models
+var userController = require('./models/model');
+var User = new userController();
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -22,6 +27,7 @@ app.use(express.methodOverride());
 app.use(express.cookieParser());
 app.use(express.bodyParser());
 app.use(express.session({ secret: 'keyboard cat' }));
+app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -33,33 +39,50 @@ app.use('public', express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
+
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    User.find_by_id(id, function (err, user) {
+        done(err, user);
+    });
+});
 passport.use(new LocalStrategy(
     function (username, password, done) {
-        User.findOne({ username: username }, function (err, user) {
+        User.is_valid(username, password, function (err, user) {
             if (err) {
                 return done(err);
+            } else if (!user) {
+                return done(null, false, { message: 'Incorrect username or password' });
             }
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
+            else {
+                return done(null, {id: user.id});
             }
-            if (!user.validPassword(password)) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
-            return done(null, user);
         });
+
     }
 ));
 
-app.get('/home', routes.home);
+app.get('/', ensureAuthenticated, routes.home);
 app.get('/login', routes.login);
 
 
 app.post('/login',
-    passport.authenticate('local', { successRedirect: '/home',
+    passport.authenticate('local', { successRedirect: '/',
         failureRedirect: '/login',
-        failureFlash: true })
+        failureFlash: true
+    })
 );
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
+
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login')
+}
