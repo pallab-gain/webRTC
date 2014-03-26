@@ -65,24 +65,26 @@ passport.use(new LocalStrategy(
     }
 ));
 
-app.get('/', ensureAuthenticated, routes.home);
-app.get('/login', routes.login);
-
-
 app.post('/login',
     passport.authenticate('local', { successRedirect: '/',
         failureRedirect: '/login',
         failureFlash: true
     })
 );
+app.post('/addbuddy', function (req, res) {
+
+});
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
-
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
     res.redirect('/login')
 }
+
+app.get('/', ensureAuthenticated, routes.home);
+app.get('/login', routes.login);
+

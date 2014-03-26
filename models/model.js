@@ -46,7 +46,27 @@ var userController = function () {
                     return callback(null, {'id': id});
                 }
             });
+        },
+        already_buddy: function (id, callback) {
+            var sql = " "
+        },
+        add_buddy: function (phone, callback) {
+            var self = this;
+            var sql = " SELECT id as id, phone as phone FROM ?? WHERE ?? = ? "
+            var val = ['users', 'phone', phone]
+            sql = mysql.format(sql, val)
+            con.query(sql, function (err, result) {
+                if (err) {
+                    return callback(err, null);
+                } else if (typeof result[0] == 'undefined') {
+                    return callback('user not exists', null);
+                } else {
+                    console.log('todo add this buddy');
+                    return callback(null, 'buddy is added in the buddy list');
+                }
+            });
         }
+
     }
 }
 module.exports = userController;

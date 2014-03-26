@@ -7,4 +7,7 @@ exports.login = function (req, res) {
 
 exports.home = function (req, res) {
     res.sendfile('views/home.html');
-}
+};
+exports.addbuddy = function (req, res) {
+
+};
