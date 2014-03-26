@@ -2,7 +2,7 @@
     "name": "webRTC",
     "version": "0.0.1",
     "scripts": {
-        "start": "hotnode ./server.js"
+        "start": "hotnode app.js"
     },
     "dependencies": {
         "express": "*",
@@ -11,7 +11,10 @@
         "bookshelf": "*",
         "mysql": "*",
         "hotnode": "*",
-        "passport": "*"
+        "passport": "*",
+        "passport-local": "*",
+        "passport-openid": "*",
+        "passport-facebook": "*"
     },
     "engines": {
         "node": ">=0.6"
