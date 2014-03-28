@@ -71,21 +71,13 @@ app.post('/login',
         failureFlash: true
     })
 );
-app.post('/addbuddy', ensureAuthenticated, function (req, res) {
-    var phone = req.body.phone;
-    User.add_buddy(req.user['id'],phone, function (err, result) {
-        var response = {status: null, data: null};
-        if (err) {
-            response.status = false;
-            response.data = err;
-            res.send(response);
-        } else {
-            response.status = true;
-            response.data = result;
-            res.send(response);
-        }
-    })
+app.get('/logout', function (req, res) {
+    req.logout();
+    res.redirect('/login');
 });
+
+
+//passport js'er sob kaj ses upoer'er block'a
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
@@ -99,4 +91,18 @@ function ensureAuthenticated(req, res, next) {
 
 app.get('/', ensureAuthenticated, routes.home);
 app.get('/login', routes.login);
-
+app.post('/addbuddy', ensureAuthenticated, function (req, res) {
+    var phone = req.body.phone;
+    User.add_buddy(req.user['id'], phone, function (err, result) {
+        var response = {status: null, data: null};
+        if (err) {
+            response.status = false;
+            response.data = err;
+            res.send(response);
+        } else {
+            response.status = true;
+            response.data = result;
+            res.send(response);
+        }
+    })
+});
