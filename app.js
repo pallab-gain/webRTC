@@ -93,6 +93,8 @@ function ensureAuthenticated(req, res, next) {
 
 app.get('/', ensureAuthenticated, routes.home);
 app.get('/login', routes.login);
+app.get('/me', ensureAuthenticated, routes.me);
+
 app.post('/addbuddy', ensureAuthenticated, function (req, res) {
     var phone = req.body.phone;
     User.add_buddy(req.user['id'], phone, function (err, result) {
@@ -113,6 +115,20 @@ var chat = io
     .of('/chat')
     .on('connection', function (socket) {
         console.log('new connection at ' + new Date());
-        var data = {status: true}
-        socket.emit('on_connection', data);
+        socket.emit('on_connection', {status: true});
+        socket.on('disconnect', function () {
+            console.log('disconnected ', socket);
+            if (typeof socket.roomid !== 'undefined') {
+                socket.leave(socket.roomid);
+            }
+        });
+        socket.on('joinroom', function (roomid) {
+            console.log('join room called ', roomid);
+            socket.join(roomid);
+            socket.roomid = roomid;
+            io.of('/chat').in(roomid).emit('on_joinroom', {status: true});
+        })
+
     });
+
+
