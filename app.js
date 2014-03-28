@@ -3,7 +3,6 @@
  */
 
 var express = require('express');
-var routes = require('./routes/route');
 var http = require('http');
 var path = require('path');
 var io = require('socket.io')
@@ -91,9 +90,31 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/login')
 }
 
-app.get('/', ensureAuthenticated, routes.home);
-app.get('/login', routes.login);
-app.get('/me', ensureAuthenticated, routes.me);
+app.get('/', ensureAuthenticated, function (req, res) {
+    res.sendfile('views/home.html');
+});
+app.get('/login', function (req, res) {
+    res.sendfile('views/login.html');
+});
+app.get('/me', ensureAuthenticated, function (req, res) {
+    res.send(req.user);
+});
+
+app.post('/startcall', ensureAuthenticated, function (req, res) {
+
+    if (typeof req.body.id1 !== 'undefined' && typeof  req.body.id2 !== 'undefined') {
+        User.start_call(req.body.id1, res.body.id2, function (err, data) {
+            if (err) {
+                res.send({status: false, msg: err});
+            } else {
+                res.send({status: true});
+            }
+        })
+    } else {
+        res.send({status: false, msg: 'cannot establiched connection'});
+    }
+
+});
 
 app.post('/addbuddy', ensureAuthenticated, function (req, res) {
     var phone = req.body.phone;
@@ -117,12 +138,11 @@ var chat = io
         console.log('new connection at ' + new Date().toJSON().replace('T', ' ').replace('Z', ''));
         socket.emit('on_connection', {status: true});
         socket.on('disconnect', function () {
-            console.log('disconnected ', socket);
             if (typeof socket.roomid !== 'undefined') {
                 socket.leave(socket.roomid);
                 User.end_call(socket.roomid, function (err, data) {
                     if (err) {
-                        console.error('cannot update end_call data');
+                        console.error('cannot update end_call data',err);
                     } else {
                         console.log('success to update end_call data ', data);
                     }

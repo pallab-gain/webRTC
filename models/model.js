@@ -164,10 +164,10 @@ var userController = function () {
         end_call: function (id1, callback) {
             var cur_time = new Date().toJSON().replace('T', ' ').replace('Z', '');
             var sql = "update callhistory set status = ?, endtime = ? where status = ? and (buddy1 = ? or buddy2 = ?) ";
-            var val = [true, cur_time, id1, id1];
+            var val = [false, cur_time, true, id1, id1];
             sql = mysql.format(sql, val);
 
-            con.query(sql, function (err, cd_data) {
+            con.query(sql, function (err, cb_data) {
                 if (err) {
                     return callback(err, null);
                 } else {
