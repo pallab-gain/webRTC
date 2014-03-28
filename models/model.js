@@ -47,24 +47,94 @@ var userController = function () {
                 }
             });
         },
-        already_buddy: function (id, callback) {
-            var sql = " "
-        },
-        add_buddy: function (phone, callback) {
-            var self = this;
-            var sql = " SELECT id as id, phone as phone FROM ?? WHERE ?? = ? "
-            var val = ['users', 'phone', phone]
-            sql = mysql.format(sql, val)
+        get_people: function (attr, attr_val, callback) {
+            var sql = " SELECT * FROM ?? WHERE ?? = ? "
+            var val = ['users', attr, attr_val]
+            sql = mysql.format(sql, val);
             con.query(sql, function (err, result) {
                 if (err) {
                     return callback(err, null);
                 } else if (typeof result[0] == 'undefined') {
-                    return callback('user not exists', null);
+                    return callback('no user found', null);
                 } else {
-                    console.log('todo add this buddy');
-                    return callback(null, 'buddy is added in the buddy list');
+                    return callback(null, result[0]);
                 }
             });
+        },
+        already_buddy: function (myid, buddyid, callback) {
+            var sql = "select count(*) as exist from ?? where ?? = ? and ?? = ?"
+            var val = ['buddy', 'me', myid, 'buddy_id', buddyid]
+            sql = mysql.format(sql, val);
+            con.query(sql, function (err, result) {
+                if (err) {
+                    return callback(err, null);
+                } else {
+                    var already_friend = result[0]['exist'];
+                    return callback(null, {'already_buddy': already_friend ? true : false})
+                }
+            })
+
+        },
+        make_buddy: function (myid, buddyid, callback) {
+            var sql = "INSERT INTO ??(??, ??) VALUES (?,?)"
+            var val = ['buddy', 'me', 'buddy_id', myid, buddyid]
+            sql = mysql.format(sql, val);
+            console.log(sql);
+            con.query(sql, function (err, result) {
+                if (err) {
+                    return callback(err, null);
+                } else {
+                    return callback(null, {status: true, msg: 'successfully added to buddy list'});
+                }
+            })
+        },
+        add_buddy: function (myid, buddy_phone, callback) {
+            var self = this;
+            self.get_people('phone', buddy_phone, function (err, data) {
+                if (err) {
+                    return callback(err, null);
+                } else {
+                    self.already_buddy(myid, data['id'], function (err, _data) {
+                        if (_data['already_buddy'] == true) {
+                            return callback('already buddy', null);
+                        } else {
+                            self.make_buddy(myid, data['id'], function (err, __data) {
+                                if (err) {
+                                    return  callback(err, null);
+                                } else {
+                                    return callback(null, __data);
+                                }
+                            });
+                        }
+
+                    })
+                }
+            })
+        },
+        update_status: function (id, status_type, callback) {
+            var sql = "UPDATE ?? SET ??=? WHERE ?? = ?";
+            var val = ['users', 'status', status_type, 'id', id];
+            sql = mysql.format(sql, val);
+            con.query(sql, function (err, data) {
+                if (err) {
+                    return callback(err, null);
+                } else {
+                    return callback(null, {status: true, data: data});
+                }
+            })
+        },
+        get_online_buddy: function (id, status_type, callback) {
+            var sql = "SELECT * FROM users inner join buddy on users.id = buddy.buddy_id \ " +
+                "where users.status = ? and buddy.me = ?";
+            var val = [status_type, id]
+            sql = mysql.format(sql, val);
+            con.query(sql, function (err, data) {
+                if (err) {
+                    return callback(err, null);
+                } else {
+                    return callback(null, data);
+                }
+            })
         }
 
     }

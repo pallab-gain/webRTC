@@ -71,8 +71,20 @@ app.post('/login',
         failureFlash: true
     })
 );
-app.post('/addbuddy', function (req, res) {
-
+app.post('/addbuddy', ensureAuthenticated, function (req, res) {
+    var phone = req.body.phone;
+    User.add_buddy(req.user['id'],phone, function (err, result) {
+        var response = {status: null, data: null};
+        if (err) {
+            response.status = false;
+            response.data = err;
+            res.send(response);
+        } else {
+            response.status = true;
+            response.data = result;
+            res.send(response);
+        }
+    })
 });
 
 http.createServer(app).listen(app.get('port'), function () {
