@@ -75,5 +75,4 @@ app.controller('webrtcCtrl', function ($scope, socket, manager) {
     socket.on('on_joinroom', function (soc, args) {
         console.log('yeo', args);
     });
-    $scope.webrtcCtrl = this;
 })

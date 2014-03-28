@@ -114,12 +114,19 @@ app.post('/addbuddy', ensureAuthenticated, function (req, res) {
 var chat = io
     .of('/chat')
     .on('connection', function (socket) {
-        console.log('new connection at ' + new Date().toJSON().replace('T',' ').replace('Z',''));
+        console.log('new connection at ' + new Date().toJSON().replace('T', ' ').replace('Z', ''));
         socket.emit('on_connection', {status: true});
         socket.on('disconnect', function () {
             console.log('disconnected ', socket);
             if (typeof socket.roomid !== 'undefined') {
                 socket.leave(socket.roomid);
+                User.end_call(socket.roomid, function (err, data) {
+                    if (err) {
+                        console.error('cannot update end_call data');
+                    } else {
+                        console.log('success to update end_call data ', data);
+                    }
+                })
             }
         });
         socket.on('joinroom', function (roomid) {
@@ -150,8 +157,11 @@ var chat = io
                 });
             }
         });
-
-
+        socket.on('sdp_message', function (buddyid, msg) {
+            if (typeof  socket.roomid !== 'undefined') {
+                io.of('/chat').in(buddyid).emit('on_sdp_message', {msg: msg, buddyid: socket.roomid});
+            }
+        });
     });
 
 
