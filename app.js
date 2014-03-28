@@ -6,6 +6,7 @@ var express = require('express');
 var routes = require('./routes/route');
 var http = require('http');
 var path = require('path');
+var io = require('socket.io')
 var flash = require('connect-flash')
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -39,6 +40,9 @@ app.use('public', express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
+
+var server = http.createServer(app).listen(app.get('port'));
+var io = io.listen(server);
 
 passport.serializeUser(function (user, done) {
     done(null, user.id);
@@ -79,9 +83,8 @@ app.get('/logout', function (req, res) {
 
 //passport js'er sob kaj ses upoer'er block'a
 
-http.createServer(app).listen(app.get('port'), function () {
-    console.log('Express server listening on port ' + app.get('port'));
-});
+
+
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
