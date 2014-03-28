@@ -114,7 +114,7 @@ app.post('/addbuddy', ensureAuthenticated, function (req, res) {
 var chat = io
     .of('/chat')
     .on('connection', function (socket) {
-        console.log('new connection at ' + new Date());
+        console.log('new connection at ' + new Date().toJSON().replace('T',' ').replace('Z',''));
         socket.emit('on_connection', {status: true});
         socket.on('disconnect', function () {
             console.log('disconnected ', socket);
@@ -123,11 +123,34 @@ var chat = io
             }
         });
         socket.on('joinroom', function (roomid) {
-            console.log('join room called ', roomid);
             socket.join(roomid);
             socket.roomid = roomid;
             io.of('/chat').in(roomid).emit('on_joinroom', {status: true});
-        })
+        });
+        socket.on('callrequest', function (buddyid) {
+            if (typeof socket.roomid !== 'undefined') {
+                User.get_people('id', socket.roomid, function (err, user) {
+                    if (!err) {
+                        io.of('/chat').in(buddyid).emit('on_callrequest', {status: true, user: user});
+                    } else {
+                        io.of('/chat').in(buddyid).emit('on_callrequest', {status: false, err: err});
+                    }
+                });
+            }
+        });
+        socket.on('response_callrequest', function (buddyid, status) {
+            if (typeof socket.roomid !== 'undefined') {
+                User.get_people('id', socket.roomid, function (err, user) {
+                    if (!err) {
+                        io.of('chat').in(buddyid).emit('on_response_callrequest', {status: status, user: user});
+                    } else {
+                        io.of('/chat').in(buddyid).emit('on_response_callrequest', {status: false, err: err});
+                    }
+
+                });
+            }
+        });
+
 
     });
 

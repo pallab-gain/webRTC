@@ -147,8 +147,25 @@ var userController = function () {
                     return callback(null, data);
                 }
             })
+        },
+        start_call: function (buddy1, buddy2, callback) {
+            var cur_time = new Date().toJSON().replace('T', ' ').replace('Z', '');
+            var sql = "INSERT INTO ?? (??, ??, ??, ??) VALUES (?,?,?,?,?)";
+            var val = ['callhistory', 'buddy1', 'buddy2', 'status', 'starttime', Math.min(buddy1, buddy2), Math.max(buddy1, buddy2), 1, curtime];
+            sql = mysql.format(sql, val);
+            con.query(sql, function (err, cb_data) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, {status: true});
+                }
+            });
+        },
+        end_call: function (id1, callback) {
+            var cur_time = new Date().toJSON().replace('T', ' ').replace('Z', '');
+            var sql = "update callhistory set status = ?, endtime = ? where status = ? and (buddy1 = ? or buddy2 = ?) ";
+            var val = [true, cur_time, id1, id1]
         }
-
     }
 }
 module.exports = userController;
