@@ -21,6 +21,12 @@
         <input type="submit" value="Add Buddy"/>
     </div>
 </form>
+<div>
+    <button type="button" ng-repeat="buddy in buddylist track by $index" ng-click="callrequest(buddy)">
+        Call {{buddy.name}}
+    </button>
+</div>
+
 
 </body>
 </html>

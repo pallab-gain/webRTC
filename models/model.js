@@ -136,10 +136,12 @@ var userController = function () {
             })
         },
         get_online_buddy: function (id, status_type, callback) {
-            var sql = "SELECT * FROM users inner join buddy on users.id = buddy.buddy_id \ " +
+            console.log(id);
+            var sql = "SELECT username as name, id as id, phone as phone FROM users inner join buddy on users.id = buddy.buddy_id \ " +
                 "where users.status = ? and buddy.me = ?";
             var val = [status_type, id]
             sql = mysql.format(sql, val);
+            console.log(sql);
             con.query(sql, function (err, data) {
                 if (err) {
                     return callback(err, null);

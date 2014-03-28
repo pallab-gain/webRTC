@@ -99,8 +99,17 @@ app.get('/login', function (req, res) {
 app.get('/me', ensureAuthenticated, function (req, res) {
     res.send(req.user);
 });
+app.get('/onlinebuddy', ensureAuthenticated, function (req, res) {
+    User.get_online_buddy(req.user['id'], 1, function (err, buddies) {
+        if (err) {
+            res.send({status: false, msg: err});
+        } else {
+            res.send({status: true, buddylist: buddies});
+        }
+    })
+});
 
-app.post('/startcall', ensureAuthenticated, function (req, res) {
+app.post('/engagedcall', ensureAuthenticated, function (req, res) {
 
     if (typeof req.body.id1 !== 'undefined' && typeof  req.body.id2 !== 'undefined') {
         User.start_call(req.body.id1, res.body.id2, function (err, data) {
@@ -142,7 +151,7 @@ var chat = io
                 socket.leave(socket.roomid);
                 User.end_call(socket.roomid, function (err, data) {
                     if (err) {
-                        console.error('cannot update end_call data',err);
+                        console.error('cannot update end_call data', err);
                     } else {
                         console.log('success to update end_call data ', data);
                     }
@@ -156,6 +165,7 @@ var chat = io
         });
         socket.on('callrequest', function (buddyid) {
             if (typeof socket.roomid !== 'undefined') {
+
                 User.get_people('id', socket.roomid, function (err, user) {
                     if (!err) {
                         io.of('/chat').in(buddyid).emit('on_callrequest', {status: true, user: user});

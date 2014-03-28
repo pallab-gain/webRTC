@@ -28,24 +28,37 @@ app.factory('socket', function ($rootScope) {
 });
 app.factory('manager', function ($http, $q) {
     var manager = {};
-    manager.aboutme =
-        function () {
-            var d = $q.defer();
-            var url = '/me'
-            $http({method: 'GET', url: url})
-                .success(function (data, status, headers, config) {
-                    manager.data = data;
-                    d.resolve();
-                })
-                .error(function (data, status, header, config) {
-                    manager.data = data;
-                    d.reject();
-                })
-            return d.promise;
-        }
+    manager.aboutme = function () {
+        var d = $q.defer();
+        var url = '/me'
+        $http({method: 'GET', url: url})
+            .success(function (data, status, headers, config) {
+                manager.data = data;
+                d.resolve();
+            })
+            .error(function (data, status, header, config) {
+                manager.data = data;
+                d.reject();
+            })
+        return d.promise;
+    }
+    manager.onlinebuddy = function () {
+        var d = $q.defer();
+        var url = '/onlinebuddy'
+        $http({method: 'GET', url: url})
+            .success(function (data, status, headers, config) {
+                manager.data = data;
+                d.resolve();
+            })
+            .error(function (data, status, header, config) {
+                manager.data = data;
+                d.reject();
+            })
+        return d.promise;
+    }
     manager.set_cookie = function (id) {
         $.cookie('user_id', id, {
-            expires: 7
+            expires: 7 //expire in 7 days
         });
     }
     manager.unset_cookie = function () {
@@ -73,6 +86,24 @@ app.controller('webrtcCtrl', function ($scope, socket, manager) {
         });
     });
     socket.on('on_joinroom', function (soc, args) {
-        console.log('yeo', args);
+        if (args['0'].status == true) {
+            console.log('successfully connected to a room');
+            //now get a list of all her online buddy
+            manager.onlinebuddy().then(function () {
+                if (typeof manager.data === 'undefined') {
+                    console.error('error');
+                } else {
+                    if (manager.data.status == true) {
+                        console.log('success fetch online buddies');
+                        $scope.buddylist = manager.data.buddylist;
+                    } else {
+                        console.error('error', manager.data);
+                    }
+                }
+            });
+        } else {
+            console.error('cannot connect to a room');
+        }
     });
+
 })
