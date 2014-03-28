@@ -79,12 +79,24 @@ var userController = function () {
             var sql = "INSERT INTO ??(??, ??) VALUES (?,?)"
             var val = ['buddy', 'me', 'buddy_id', myid, buddyid]
             sql = mysql.format(sql, val);
-            console.log(sql);
+
             con.query(sql, function (err, result) {
                 if (err) {
                     return callback(err, null);
                 } else {
                     return callback(null, {status: true, msg: 'successfully added to buddy list'});
+                }
+            })
+        },
+        create_user: function (username, password, phone, callback) {
+            var sql = "insert into users(??,??,??) values(?,?,?)";
+            var val = ['username', 'password', 'phone', username, password, phone];
+            sql = mysql.format(sql, val);
+            con.query(sql, function (err, result) {
+                if (err) {
+                    return callback(err, null);
+                } else {
+                    return callback(null, result);
                 }
             })
         },
