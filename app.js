@@ -34,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
 
-app.use('public', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 // development only
 if ('development' == app.get('env')) {
@@ -84,7 +84,6 @@ app.get('/logout', function (req, res) {
 //passport js'er sob kaj ses upoer'er block'a
 
 
-
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -112,7 +111,8 @@ app.post('/addbuddy', ensureAuthenticated, function (req, res) {
 
 var chat = io
     .of('/chat')
-    .on('connection',function(socket){
-        console.log('new connection at '+ new Date());
-
+    .on('connection', function (socket) {
+        console.log('new connection at ' + new Date());
+        var data = {status: true}
+        socket.emit('on_connection', data);
     });

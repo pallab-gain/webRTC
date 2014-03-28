@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="webrtcApp">
 <head>
     <title>webRTC</title>
 </head>
-<body>
-Home Page
+
+<script src="socket.io/socket.io.js"></script>
+<script src="javascripts/lib/angular.min.js"></script>
+<script src="javascripts/webrtc.js"></script>
+
+<body ng-controller="webrtcCtrl">
 
 <form action="/addbuddy" method="post">
     <div>
