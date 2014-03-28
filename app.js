@@ -109,3 +109,10 @@ app.post('/addbuddy', ensureAuthenticated, function (req, res) {
         }
     })
 });
+
+var chat = io
+    .of('/chat')
+    .on('connection',function(socket){
+        console.log('new connection at '+ new Date());
+
+    });
