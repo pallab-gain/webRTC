@@ -156,35 +156,51 @@ var chat = io
                         console.log('success to update end_call data ', data);
                     }
                 })
+                User.update_status(socket.roomid, 0, function (err, data) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('successfully made him offline ', data);
+                    }
+                })
             }
         });
         socket.on('joinroom', function (roomid) {
             socket.join(roomid);
             socket.roomid = roomid;
-            io.of('/chat').in(roomid).emit('on_joinroom', {status: true});
+            User.update_status(roomid, 1, function (err, data) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    io.of('/chat').in(roomid).emit('on_joinroom', {status: true});
+                }
+            })
+
         });
         socket.on('callrequest', function (buddyid) {
             if (typeof socket.roomid !== 'undefined') {
 
                 User.get_people('id', socket.roomid, function (err, user) {
                     if (!err) {
-                        io.of('/chat').in(buddyid).emit('on_callrequest', {status: true, user: user});
+                        io.of('/chat').in(buddyid).emit('on_callrequest', {status: true, user: {name: user.username, id: user.id}});
                     } else {
                         io.of('/chat').in(buddyid).emit('on_callrequest', {status: false, err: err});
                     }
                 });
             }
         });
-        socket.on('response_callrequest', function (buddyid, status) {
+        socket.on('response_callrequest', function (datas) {
             if (typeof socket.roomid !== 'undefined') {
+                var buddyid = datas['buddyid'], status = datas['status'];
                 User.get_people('id', socket.roomid, function (err, user) {
                     if (!err) {
-                        io.of('chat').in(buddyid).emit('on_response_callrequest', {status: status, user: user});
+                        io.of('/chat').in(buddyid).emit('on_response_callrequest', {status: status, user: {name: user.username, id: user.id}});
                     } else {
                         io.of('/chat').in(buddyid).emit('on_response_callrequest', {status: false, err: err});
                     }
 
                 });
+            } else {
             }
         });
         socket.on('sdp_message', function (buddyid, msg) {

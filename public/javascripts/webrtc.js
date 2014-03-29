@@ -105,5 +105,34 @@ app.controller('webrtcCtrl', function ($scope, socket, manager) {
             console.error('cannot connect to a room');
         }
     });
+    socket.on('on_callrequest', function (soc, args) {
+        if (typeof  args['0'] != 'undefined') {
+            console.log(args['0']);
+            if (args['0'].status == true) {
+                var user = args['0'].user;
+                var accept = confirm(user.name + " is calling you.");
+                socket.emit('response_callrequest', {buddyid: user.id, status: accept});
+            }
+
+        }
+    })
+    socket.on('on_response_callrequest', function (soc, args) {
+        if (typeof args['0'] != 'undefined') {
+            var user = args['0'].user;
+            console.log(user);
+            if (args['0'].status == true) {
+                alert(user.name + " accept your call request");
+            } else {
+                alert(user.name + " reject your call request");
+            }
+        }
+    });
+    $scope.callrequest = function (buddy) {
+        console.log(buddy);
+        if (typeof buddy !== 'undefined') {
+            socket.emit('callrequest', buddy.id);
+        }
+    };
+
 
 })
