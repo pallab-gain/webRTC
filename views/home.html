@@ -8,23 +8,31 @@
 <script src="javascripts/lib/jquery-1.11.0.min.js"></script>
 <script src="javascripts/lib/jquery.cookie.js"></script>
 <script src="javascripts/lib/angular.min.js"></script>
+
+
 <script src="javascripts/webrtc.js"></script>
+<script src="javascripts/getmedia.js"></script>
 
-<body ng-controller="webrtcCtrl">
+<body>
 
-<form action="/addbuddy" method="post">
+<div ng-controller="webrtcCtrl">
+    <form action="/addbuddy" method="post">
+        <div>
+            <label>Buddy Phone:</label>
+            <input type="text" name="phone"/>
+        </div>
+        <div>
+            <input type="submit" value="Add Buddy"/>
+        </div>
+    </form>
     <div>
-        <label>Buddy Phone:</label>
-        <input type="text" name="phone"/>
+        <button type="button" ng-repeat="buddy in buddylist track by $index" ng-click="callrequest(buddy)">
+            Call {{buddy.name}}
+        </button>
     </div>
-    <div>
-        <input type="submit" value="Add Buddy"/>
-    </div>
-</form>
-<div>
-    <button type="button" ng-repeat="buddy in buddylist track by $index" ng-click="callrequest(buddy)">
-        Call {{buddy.name}}
-    </button>
+</div>
+<div ng-controller="getMediaCtrl">
+    <video id="localVideo" autoplay></video>
 </div>
 
 

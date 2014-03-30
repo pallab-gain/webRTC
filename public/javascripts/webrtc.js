@@ -134,5 +134,4 @@ app.controller('webrtcCtrl', function ($scope, socket, manager) {
         }
     };
 
-
 })
